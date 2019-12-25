@@ -5,8 +5,7 @@
 - **Email**: ageipel@usc.edu
 
 The files you should grade are: 
-coloring.cpp
-search.cpp
-MinHeap.h
-Makefile
-hw6q3.pdf
+avlbst.h
+bst.h
+rotateBST.h
+hw7q1.pdf
