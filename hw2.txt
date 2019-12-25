@@ -1,0 +1,37 @@
+Audrey Geipel
+Homework 2
+
+Problem 1
+a) README.md is unmodified
+
+b) both files are modified and fun_problem.txt is untracked
+
+c) both files are staged
+
+d) both files are tracked, and they have been modified since being staged
+
+e) README.md is staged, and fun_problem.txt is back to being staged
+	fun_problem.txt is empty, because "git checkout --" gets rid of all changes made since the last commit
+
+f) README.md is unstaged and modified because it was editted again
+
+
+Problem 3
+1. A Map would work for this, as the key could be the zipcode, and it would make it easy to access the statstic values that are associated with that zipcode. Maps make it easier to access data that is sorted with unique keys like zipcodes.
+
+2. A Set of strings that stores all the names of the students, as it would mainly just need to add or remove names. It would also be easy to run bool contains() and see whether the students solved the problem.
+
+3. A List of structs that have the number of the pokedex index and the Pokemon's information. In Lists, order matters, and because the Pokemon are sorted in order of their pokedex index, then a list would make it easy the Pokemon by their pokedex integer. 
+
+4. A Set of structs containing all the information about the movie would work for this, as order doesn't necessarily matter and if you were to do a Map, years would not be unique keys. Sets allow for adding and removing, and doing bool contains() would make searching for the movie easy.
+
+Problem 4
+The linked list that is returned is: 5,4,3,2,1
+
+This is because it enters the if(in->next != NULL) loop in funcA, and out = funcA(in->next) keeps getting called until in->next == NULL, so it gets [2,3,4,5], then [3,4,5], then [4,5], and then finally just [5]. Then the next line calls funcB([4,5],[5]).
+
+Then, funcB says in2->next = in1, so it becomes [5,4] and it gets returned to out.
+then it calls funcB again with ([3,4,5],[5,4]) and it returns [5,4,3] to out.
+then it calls funcB again with ([2,3,4,5],[5,4,3]) and it returns [5,4,3,2] to out.
+then it calls funcB again with ([1,2,3,4,5],[5,4,3,2]) and it returns [5,4,3,2,1] to out.
+Then funcA returns out, so the final linked list is [5,4,3,2,1]
