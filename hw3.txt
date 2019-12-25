@@ -1,0 +1,78 @@
+Audrey Geipel
+
+Problem 2
+
+part(a)
+enqueue 1
+	stack1: 1
+	stack2: empty
+enqueue 2
+	stack1: 2,1 (2 is the top)
+	stack2: empty
+dequeue
+	stack1: empty
+	stack2: 2 (1 was popped)
+enqueue 3
+	stack1: 3
+	stack2: 2
+enqueue 4
+	stack1: 4,3 (4 is the top)
+	stack2: 2
+dequeue
+	stack1: 4,3
+	stack2: empty
+enqueue 5
+	stack1: 5,4,3 (5 is the top)
+	stack2: empty
+enqueue 6
+	stack1: 6,5,4,3 (6 is the top)
+	stack2: empty
+
+part(b)
+	Enqueue has a runtime of Theta(1) because it just adds numbers.
+	Dequeue has a runtime of n because it has to go through and pop all the contents of stack1 and put them in stack2.
+	So, the worst case runtime for enqueue is Theta(1) and worst-case for dequeue() is Theta(n).
+
+Part(c)
+	if pop() has an Theta(n) runtime every time it is called, then the worst-case runtime for dequeue is now Theta(n^2), because it has an n runtime every time pops an element from stack1, so it has an n runtime n times. 
+	Enqueue still has a worst-case runtime of Theta(1)
+
+
+Problem 3
+part(a)
+	The inner for loop has a runtime of logn because j is multiplied by 2 as it reaches n
+	In the worst case, A[] is an array of all 0's, so the inner for-loop is reached every time it goes throguh the loop
+	So we sum (log(i)) from i=0 to n.
+	Therefore, the worst-case run time is Theta(nlogn)
+
+part(b)
+	tally++ has a runtime of Theta(1)
+	The innermost for loop has a runtime of logn because k is multiplied by n as it reaches n
+	j and i are the same number, because j starts out equalling i and they are incremented the same. So, the innermost for-loop is reached every time because j%i will always equal 0.
+	So we sum log(i) from i=0 to n for both for loops.
+	Therefore, the worst-case runtime is Theta((n^2)logn)
+
+part(c)
+	the inner-most part of the function b[j]=a[j] will have a runtime of 
+	Theta(size) where size is a constant that grows by 10 everytime it is reached.
+
+	the part of the function that adjusts the size of b and deletes a[] will also have a runtime of Theta(size) because it has to go through all of a and delete it.
+
+	these two inner-most parts of the function will only be accessed every 10 increments of i.
+
+	a[i] = sqrt(i) will have a runtime of Theta(1)
+
+	Because all of the functions inside of the main for-loop have constant runtimes, the overall function will have a Theta(n) runtime. The main for-loop goes from i to n, so it is summing a constant from i->n, so the runtime is Theta(n).
+
+part(d)
+	the inner-most part of the function b[j]=a[j] will have a runtime of 
+	Theta(size) where size is a constant that doubles everytime it is reached.
+
+	The part of the function that adjusts the size of b and deletes a[] will have a runtime of Theta(2(n^2)) because it has to create a new array of double the size and then go through all of a (size n) and delete it. We can get rid of the 2 and just make it Theta(n^2).
+
+	These two inner-most parts of the function will only be accessed when i == size, which will happen logn times.
+
+	a[i] = sqrt(i) will have a runtime of Theta(1), so it is not relevant.
+
+	 The main for-loop goes from i to n, and the for-loop with run time Theta(n^2) is accessed logn times.
+	 So we sum n^2 from i = 0 to logn and get a runtime of Theta((n^2)logn)

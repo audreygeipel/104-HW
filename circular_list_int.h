@@ -34,6 +34,7 @@ class CircularListInt
 		Item(int itemValue): value(itemValue) {}
 	};
 
+
 	// ------------------------------------------
 
 	// STUDENTS: add additional private members here

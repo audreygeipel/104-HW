@@ -5,29 +5,24 @@
 	CircularListInt::CircularListInt(){}
 
 	// Destructor. Should delete all data allocated by the list. 
-	CircularListInt::~CircularListInt(){	
-
-	}
+	CircularListInt::~CircularListInt(){
+			
+		}
 
 	// Gets item at an index.
 	// If an index is passed that is larger then the number of items in the list, it should "wrap around" back to the first element.
 	// If there are no elements in the list, returns 0.
 	int CircularListInt::get(size_t index) const{
 	
-	if(empty() == true){
-		return 0;
-	}	
-
+		//size_t newindex = index % count;
 	Item * inditem = head;
 
 	while(index !=0){
 		inditem = inditem->next;
 		index = index-1;
 	}
-		int value = inditem->value;
-		delete inditem;
-		
-		return value;
+
+		return inditem->value;
 	}
 
 	// get length of list.
@@ -44,7 +39,6 @@
 			size++;
 			scan = scan->next;
 		}
-		delete scan;
 
 		return size;
 	}
@@ -66,7 +60,7 @@
 			head = newitem;
 			newitem->next = newitem;
 			newitem->prev = newitem;
-			delete newitem; //this line was commented out?
+			//delete newitem;
 			return;
 		}
 
@@ -80,9 +74,9 @@
 
 		hold->next = newitem;
 
-		delete newitem;
-		delete hold;
-		//these deletes passed and fixed the valgrind errors when run through valgrind
+		//delete newitem;
+		//delete hold;
+		//these deletes passed and fixed the valgrind errors when run throguh valgrind
 		//but when just put into the test, it created a segfault?
 
 	}
@@ -92,20 +86,12 @@
 	void CircularListInt::set(size_t index, int value){
 		Item * inditem = head;
 
-		if(head != nullptr && index != 0){
 		while(index !=0){
 			inditem = inditem->next;
 			index = index-1;
 		}
-	}	
-	if(head == nullptr && index!= 0){
-		return;
-	}
 
-	inditem->value = value;
-
-	delete inditem;
-
+		inditem->value = value;
 	}
 
 	// Removes the item at the given index from the list.
@@ -113,7 +99,7 @@
 	// If an index is passed that is larger then the number of items in the list, it should "wrap around" back to the first element.
 	void CircularListInt::remove(size_t index){
 	
-	if(empty() == true){
+	if(head == nullptr){
 		return;
 	}
 	if(size() == 1){
@@ -138,7 +124,5 @@
 
 	ptr->next = head;
 
-	delete ptr;
-	delete inditem;
 
 	}
