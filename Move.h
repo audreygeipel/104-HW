@@ -20,13 +20,14 @@
 #include "Player.h"
 #include "Bag.h"
 #include "Dictionary.h"
-#include "Square.h"
 
 // forward declaration to prevent circular includes
 class Board;
+class Player;
 
 class Move
 {
+	//STUDENTS: Add private members & functions here
 
 public:
 
@@ -37,6 +38,11 @@ public:
 	   in fact in the player's hand.
 	   It can handle all three types of move (PASS, EXCHANGE, PLACE).
 	   Coordinates start with 1.
+	   Can throw MoveException, with the following messages:
+	   - "EMPTY": The player proposed to place/exchange 0 tiles.
+	   - "MALFORMED": Format error in expression, e.g., missing direction or garbage characters.
+	   - "UNKNOWN": Unknown type of command (other than PASS, EXCHANGE, PLACE)
+	   - "WRONGTILES": The player did not have all of the proposed tiles.
 	*/
 	static Move * parseMove(std::string moveString, Player &p);
 
@@ -66,22 +72,18 @@ public:
 
 	virtual ~Move();
 
-	//Add more public/protected/private functions/variables here.
-
 protected:
 
 	Player * _player;
 
-	std::string m;
 	// constructor -- only accessible to subclasses
 	Move(Player * player);
-
-
 };
 
 // Represents a pass move, where the player takes no action
 class PassMove : public Move
 {
+	//STUDENTS: Add private members & functions here
 
 public:
 
@@ -98,19 +100,23 @@ public:
 	   This may throw exceptions; students: it's up to you to
 	   decide (and document) what exactly it throws*/
 	void execute(Board & board, Bag & bag, Dictionary & dictionary);
-
-	//Add more public/protected/private functions/variables here.
-
 };
 
 // represents an exchange move, were a player replaces certain tiles
 class ExchangeMove : public Move
 {
+	//STUDENTS: Add private members & functions here
+
+	std::vector<Tile*> _tiles;
 
 public:
 	/* Creates an EXCHANGE move, exchanging the tiles listed in the
 	   string (formatted according to the EXCHANGE command description)
 	   with new tiles from the bag.
+
+	   Can throw MoveException, with the following messages:
+	   - "EMPTY": The player proposed to exchange 0 tiles.
+	   - "WRONGTILES": The player did not have all of the proposed tiles.
 	   */
 	ExchangeMove(std::string tileString, Player * p);
 
@@ -124,16 +130,16 @@ public:
 	   This may throw exceptions; students: it's up to you to
 	   decide (and document) what exactly it throws*/
 	void execute(Board & board, Bag & bag, Dictionary & dictionary);
-
-	//Add more public/protected/private functions/variables here.
-protected:
-	std::string exchangetiles;
-
 };
 
 // represents a place move, where a player places one or more tiles onto the board.
 class PlaceMove : public Move
 {
+	//STUDENTS: Add private members & functions here
+
+	size_t _x, _y;
+	bool _horizontal;
+	std::vector<Tile *> _tiles;
 
 public:
 	/* Creates a PLACE move, starting at row y, column x, placing the tiles
@@ -142,6 +148,10 @@ public:
 	   Coordinates start with 1.
 	   The string m is in the format described in HW4; in particular, a '?'
 	   must be followed by the letter it is to be used as.
+	   Can throw MoveException, with the following messages:
+	   - "EMPTY": The player proposed to place 0 tiles.
+	   - "WRONGTILES": The player did not have all of the proposed tiles.
+
 	*/
 	PlaceMove (size_t x, size_t y, bool horizontal, std::string tileString, Player * p);
 
@@ -151,23 +161,29 @@ public:
 		return true;
 	}
 
+	/* Returns the value of the x coordinate for a PLACE move.
+	   Coordinates start with 1. */
+	size_t x () const;
+
+	/* Returns the value of the y coordinate for a PLACE move.
+	   Coordinates start with 1. */
+	size_t y () const;
+
+	/* Returns the direction (true for horizontal) for a PLACE move. */
+	bool isHorizontal () const;
+
 	/* Returns the vector of tiles associated with a PLACE/EXCHANGE move.
 	   Return value could be arbitrary for PASS moves. */
-	//std::vector<Tile*> const & tileVector () const;
+	std::vector<Tile*> const & tileVector () const;
 
-	/* Executes this move, whichever type it is.
-	   This may throw exceptions; students: it's up to you to
-	   decide (and document) what exactly it throws*/
+	/* Executes this place move.  Places the tiles
+	 * onto the game board and updates this player's score.
+	 *
+	 * Can throw the same exceptions as Board::getPlaceMoveResults(),
+	 * plus a new MoveException("INVALIDWORD:<word>"), which indicates that
+	 * one of the words formed by the move was not in the dictionary (where the
+	 * text after the colon is the invalid word).*/
 	void execute(Board & board, Bag & bag, Dictionary & dictionary);
-
-	//Add more public/protected/private functions/variables here.
-protected:
-	size_t r;
-	size_t c;
-	bool h;
-	std::string word;
-	Square * placesquare;
-
 };
 
 

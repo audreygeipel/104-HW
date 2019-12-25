@@ -1,263 +1,204 @@
-/* The Move class family encodes a move made by one player, including its type
-   (PASS, EXCHANGE, PLACE), the tiles used (and use for blanks),
-   start square, and direction (if needed).
-   Call Move::parseMove() to turn an entered string into its subclass of
-   Move, then call apply() on that returned move to have it execute.*/
+//
+// Move class family from Jamie's solution
+//
 
-#include <vector>
-#include <string>
 #include "Move.h"
-#include "Tile.h"
-#include "Player.h"
-#include "Bag.h"
-#include "Dictionary.h"
-#include "Square.h"
+#include "Util.h"
+#include "Exceptions.h"
 #include "Board.h"
-#include <iostream>
+#include "rang.h"
+#include "Tile.h"
+#include "Dictionary.h"
+
 #include <sstream>
+#include <iostream>
+#include <iomanip>
 
-	/* Parses the given move m, and constructs the corresponding move subclass.
-	   m is assumed to be in the format described on the assignment sheet for a move command.
-	   The player passed in is used to verify that the proposed tiles are
-	   in fact in the player's hand.
-	   It can handle all three types of move (PASS, EXCHANGE, PLACE).
-	   Coordinates start with 1.
-	*/
-	Move::Move(Player * player){
-		_player = player;
+Move* Move::parseMove(std::string moveString, Player &p)
+{
+	makeUppercase(moveString);
+	std::istringstream moveStream(moveString);
+
+	// pull the first word out of the command
+	std::string commandWord;
+	moveStream >> commandWord;
+
+	if(commandWord == "PASS")
+	{
+		return new PassMove(&p);
 	}
+	else if(commandWord == "EXCHANGE")
+	{
+		// pull tile string out of command
+		std::string tilesToExchange;
+		moveStream >> tilesToExchange;
 
-	Move* Move::parseMove(std::string moveString, Player &p){
-		std::string space = " ";
-		std::string movename;
-		std::string row;
-		std::string column;
-		std::string direction;
-		std::string tiles;
-		size_t x;
-		size_t y;
-		bool horiz;
+		return new ExchangeMove(tilesToExchange, &p);
+	}
+	else if(commandWord == "PLACE")
+	{
+		// pull place args out of command
+		char direction;
+		size_t row;
+		size_t col;
+		std::string tilesToExchange;
 
-		std::string m;
+		moveStream >> direction >> row >> col >> tilesToExchange;
 
-	for(unsigned int i = 0; i<moveString.size();i++){
-			moveString[i] = tolower(moveString[i]);
+		if(!(direction == '-' || direction == '|'))
+		{
+			throw MoveException("MALFORMED");
 		}
 
-	std::stringstream ss(moveString);
-
-		ss >> movename;
-		
-
-		if(movename == "pass"){
-			Move * newmove = new PassMove(&p);
-			return newmove;
-		}
-		else if (movename == "exchange"){
-			ss >> tiles;
-			std::cout << tiles << std::endl;
-			Move * newmove = new ExchangeMove(tiles,&p);
-			return newmove;
-		}
-		else if(movename == "place"){
-			ss >> direction;
-				if(direction == "-"){
-					horiz = true;
-				}else{
-					horiz = false;
-				}
-			
-				ss >> x;
-				
-				ss >> y;
-
-				ss >> tiles;
-
-			Move * newmove = new PlaceMove(x,y,horiz,tiles,&p);
-			return newmove;
-		}
-		else{
-			std::cout << "lol you messed up" << std::endl;
-		}
-
-	return 0;
-
-	}	
-
-	Move::~Move(){}
-
-
-// Represents a pass move, where the player takes no action
-//class PassMove : public Move
-
-
-	/* Constructs a pass move. */
-	PassMove::PassMove(Player * player):Move(player){
-
+		return new PlaceMove(col, row, direction == '-', tilesToExchange, &p);
 	}
-	
-	/* Executes this move, whichever type it is.
-	   This may throw exceptions; students: it's up to you to
-	   decide (and document) what exactly it throws*/
-	void PassMove::execute(Board & board, Bag & bag, Dictionary & dictionary){
-
+	else
+	{
+		// unknown word
+		throw MoveException("UNKNOWN");
 	}
 
-// represents an exchange move, were a player replaces certain tiles
-//class ExchangeMove : public Move
-	/* Creates an EXCHANGE move, exchanging the tiles listed in the
-	   string (formatted according to the EXCHANGE command description)
-	   with new tiles from the bag.
-	   */
-	ExchangeMove::ExchangeMove(std::string tileString, Player * p):Move(p){
-		exchangetiles = tileString;
-	}
+}
 
+Move::Move(Player *player):
+_player(player)
+{
 
-	/* Executes this move, whichever type it is.
-	   This may throw exceptions; students: it's up to you to
-	   decide (and document) what exactly it throws*/
-	void ExchangeMove::execute(Board & board, Bag & bag, Dictionary & dictionary){
-		int length = exchangetiles.size();
+}
 
-		//if(_player->hasTiles(exchangetiles, false) == true){
-			_player->takeTiles(exchangetiles,false);
-			_player->addTiles(bag.drawTiles(length));
-		//}
-	}
+Move::~Move()
+{
 
+}
 
+PassMove::PassMove(Player *player):
+Move(player)
+{
 
+}
 
+void PassMove::execute(Board & board, Bag & bag, Dictionary & dictionary)
+{
+	// silence unused parameter warnings
+	(void)board;
+	(void)bag;
+	(void)dictionary;
 
-// represents a place move, where a player places one or more tiles onto the board.
-//class PlaceMove : public Move
+	// do nothing at all
+}
 
-	/* Creates a PLACE move, starting at row y, column x, placing the tiles
-	   described by the string tileString. If "horizontal" is true, then the tiles
-	   are placed horizontally, otherwise vertically.
-	   Coordinates start with 1.
-	   The string m is in the format described in HW4; in particular, a '?'
-	   must be followed by the letter it is to be used as.
-	*/
-	PlaceMove::PlaceMove (size_t x, size_t y, bool horizontal, std::string tileString, Player * p):Move(p){
-		r = x;
-		c = y;
-		h = horizontal;
-		word = tileString;
-	}
-
-	/* Returns the vector of tiles associated with a PLACE/EXCHANGE move.
-	   Return value could be arbitrary for PASS moves. */
-	//std::vector<Tile*> const & PlaceMove::tileVector () const{
-
-
-	/* Executes this move, whichever type it is.
-	   This may throw exceptions; students: it's up to you to
-	   decide (and document) what exactly it throws*/
-	void PlaceMove::execute(Board & board, Bag & bag, Dictionary & dictionary){
-		
-		int wordmult = 1;
-		int newscore = 0;
-		int oldscore = _player->getScore();
-		
-int blankcount = 0;
-
-for(unsigned int i = 0; i<word.size(); i++){
-	if(word[i] == '?'){
-		blankcount++;
+ExchangeMove::ExchangeMove(std::string tileString, Player *p):
+Move(p),
+_tiles(p->takeTiles(tileString, false))
+{
+	if(_tiles.empty())
+	{
+		throw MoveException("EMPTY");
 	}
 }
 
+void ExchangeMove::execute(Board & board, Bag & bag, Dictionary & dictionary)
+{
+	// silence unused parameter warnings
+	(void)board;
+	(void)dictionary;
 
-bool go = true;
+	std::cout << std::endl << "Throwing back these tiles:" << rang::fg::green << rang::style::bold;
+	for(std::vector<Tile *>::const_iterator sequencesIter = _tiles.cbegin(); sequencesIter != _tiles.end(); ++sequencesIter)
+	{
+		std::cout << ' ' << static_cast<char>(std::toupper((*sequencesIter)->getLetter()));
+	}
+	std::cout << rang::style::reset << std::endl;
 
-if(_player->getStart() == true){
+	bag.addTiles(_tiles);
+}
 
-	go = false;
-	_player->setStart(false);
+PlaceMove::PlaceMove(size_t x, size_t y, bool horizontal, std::string tileString, Player *p):
+Move(p),
+_x(x),
+_y(y),
+_horizontal(horizontal),
+_tiles(p->takeTiles(tileString, true))
+{
+	if(_tiles.empty())
+	{
+		throw MoveException("EMPTY");
+	}
+}
 
-	if(h == true){
-		for(unsigned int i = 0; i<word.size(); i++){
-			if((r + i) == board.getSY() &&  c == board.getSX()){
-				go = true;
+size_t PlaceMove::x() const
+{
+	return _x;
+}
+
+size_t PlaceMove::y() const
+{
+	return _y;
+}
+
+bool PlaceMove::isHorizontal() const
+{
+	return _horizontal;
+}
+
+std::vector<Tile *> const &PlaceMove::tileVector() const
+{
+	return _tiles;
+}
+
+void PlaceMove::execute(Board & board, Bag & bag, Dictionary & dictionary)
+{
+	// silence unused parameter warnings
+	(void)bag;
+
+	try
+	{
+		// first, try this move on the board and see what words are generated
+		// (may generate exceptions)
+		std::vector<std::pair<std::string, unsigned int>> sequencesFormed = board.getPlaceMoveResults(*this);
+
+		// check that each sequence of tiles in in fact a word
+		for(size_t sequenceIndex = 0; sequenceIndex < sequencesFormed.size(); ++sequenceIndex)
+		{
+			if(!dictionary.isLegalWord(sequencesFormed[sequenceIndex].first))
+			{
+				throw MoveException("INVALIDWORD:" + sequencesFormed[sequenceIndex].first);
 			}
 		}
-	}else if(h == false){
-		for(unsigned int i = 0; i<word.size(); i++){
-			if((c + i) == board.getSX() && r == board.getSY()){
-				go = true;
-			}
+
+		// print the words that would be created, and add up scores
+		unsigned int totalScore = 0;
+		std::cout << std::endl << "This move creates these words:";
+		for(size_t sequenceIndex = 0; sequenceIndex < sequencesFormed.size(); ++sequenceIndex)
+		{
+			std::cout << ' ' << rang::fg::cyan << rang::style::bold << sequencesFormed[sequenceIndex].first << rang::style::reset;
+			std::cout << " (" << rang::fgB::magenta << rang::style::bold << std::setw(0) << sequencesFormed[sequenceIndex].second << rang::style::reset << ')';
+
+			totalScore += sequencesFormed[sequenceIndex].second;
 		}
-	}
-}
+		std::cout << std::endl;
 
-if(!go){
-	std::cout <<  "You have to play on the start" << std::endl;
-	return;
-}
-if(!_player->hasTiles(word,true)){
-	std::cout << "You don't have the tiles" << std::endl;
-	return;
-}
+		// now that we're sure it's going to work,
+		// we can execute the move!
+		board.executePlaceMove(*this);
+		_player->addPoints(totalScore);
 
-		std::vector<Tile*> wordtiles;
-		wordtiles = _player->takeTiles(word, true);
-
-
-for(unsigned int i = 0; i<word.size(); i++){
-	if(word[i] == '?'){
-		word.erase(i);
-	}
-}
-
-
-if(dictionary.isLegalWord(word) == false){
-	std::cout << "Please put an actual word" << std::endl;
-}
-
-if(go == true){
-
-			if(dictionary.isLegalWord(word) == true){
-
-				if (h == true){
-
-					for(size_t i = 0; i <wordtiles.size(); i++){
-						placesquare = board.getSquare(r+i, c);
-						
-						newscore = newscore + (wordtiles[i]->getPoints() * placesquare->getLMult());
-							if(placesquare->getWMult() > 1){
-								wordmult = placesquare->getWMult();
-							}
-
-						placesquare->placeTile(wordtiles[i]);
-
-					}
-			}
-				else if(h == false){
-					for(size_t i = 0; i < wordtiles.size(); i++){
-						placesquare = board.getSquare(r, c+i);
-
-						newscore = newscore + (wordtiles[i]->getPoints() * placesquare->getLMult());
-							if(placesquare->getWMult() > 1){
-								wordmult = placesquare->getWMult();
-							}
-
-						placesquare->placeTile(wordtiles[i]); 
-					}
-			}
-
+		if(_tiles.size() == _player->getMaxTiles())
+		{
+			std::cout << "You used all tiles in your hand, earning a 50-point bonus!" << std::endl;
+			_player->addPoints(50);
 		}
+
 	}
+	catch(MoveException & moveException)
+	{
+		// the move execution failed, but the tiles in _tiles have still been removed from
+		// the player's hand.  So, we need to put them back.
+		// note to self: add unit tests for this mistake
 
-	newscore = newscore * wordmult;
+		_player->addTiles(_tiles);
 
-	_player->setScore(newscore + oldscore);
-
-	int length = wordtiles.size();
-	_player->addTiles(bag.drawTiles(length));
-
+		// now, you can get on with your exception
+		throw moveException;
+	}
 }
-
-	//Add more public/protected/private functions/variables here.
-//				_player.addScore(wordtiles[i].getPoints(),getLMult()); 

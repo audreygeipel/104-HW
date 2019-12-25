@@ -12,27 +12,28 @@
 
 #include <set>
 #include <string>
-#include <vector>
+#include "Trie.h"
 
 class Dictionary
 {
+	//STUDENTS: Add private members & functions here
+	TrieSet words;
 
 public:
 
 	/* The constructor gets passed the name of the file from which
-	   to read the word list. */
+	   to read the word list.
+	   If the file cannot be opened, it will throw a FileException
+           with message "DICTIONARY". */
 	Dictionary (std::string dictionary_file_name);
 
 	~Dictionary ();
 
 	/* Checks whether the given word is in the dictionary, and returns true if so.
-	   Case should not matter. Must run in O(logn) for the number of words in the dictionary. */
-	bool isLegalWord (std::string const & word) const;
+	   Case should not matter. Must run in O(n) for the number of words in the dictionary. */
+	bool isLegalWord (std::string const & word);
 
-	//Add more public and private functions/variables here.
-
-private:
-	std::vector<std::string> wordlist;
+	TrieSet getTrie();
 
 };
 

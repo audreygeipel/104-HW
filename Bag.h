@@ -8,8 +8,6 @@
 /* The class Bag encodes a bag of tiles for the players to draw tiles from.
    Note: the letters of all tiles in the bag will have the case they do in the tileset file.*/
 
-// Do not change this file.
-
 #ifndef BAG_H_
 #define BAG_H_
 

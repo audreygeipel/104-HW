@@ -9,8 +9,6 @@
    It stores the square's multipliers and the tile placed on it.
    It functions almost as a struct, and does not do interesting computation. */
 
-// Do not change this file.
-
 #ifndef SQUARE_H_
 #define SQUARE_H_
 
@@ -54,10 +52,12 @@ public:
 	}
 
 	/* Returns whether a tile is placed on this square. */
-	bool isOccupied () const{ return _occupied;}
+	bool isOccupied () const
+	{ return _occupied; }
 
 	/* Returns whether the square is the start square. */
-	bool isStart () const{ 	return _start; }
+	bool isStart () const
+	{ return _start; }
 
 	/* Gets the base score of the tile placed on the square (if any).
 	   Does not factor in any letter or word multipliers.

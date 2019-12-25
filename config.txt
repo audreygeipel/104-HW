@@ -1,5 +1,5 @@
 HANDSIZE: 7
-BOARD: board.txt
 TILES: bag.txt
 DICTIONARY: dictionary.txt
+BOARD: board.txt
 SEED: 99972

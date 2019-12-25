@@ -1,48 +1,67 @@
-#include <set>
+//
+// Dictionary class implementation from Jamie's solution
+//
+
 #include <string>
 #include <fstream>
-#include <sstream>
-#include <vector>
+#include <iostream>
+
 #include "Dictionary.h"
+#include "Exceptions.h"
+#include "Util.h"
 
+Dictionary::Dictionary(std::string dictionary_file_name):
+words()
+{
+	std::ifstream dictFileStream(dictionary_file_name);
 
-	/* The constructor gets passed the name of the file from which
-	   to read the word list. */
-	Dictionary::Dictionary (std::string dictionary_file_name){
+	if(!dictFileStream)
+	{
+		throw FileException("DICTIONARY");
+	}
 
-		std::stringstream ss;
-
-		std::ifstream myfile;
-
-		myfile.open(dictionary_file_name);
-
-
-		std::string line;
+	while(!dictFileStream.eof())
+	{
 		std::string word;
+		dictFileStream >> word;
 
-		while(getline(myfile,line)){
-			myfile >> word;
-			wordlist.push_back(word);
+		if (dictFileStream.eof() && word.empty())
+		{
+			break;
 		}
-		
+
+		makeLowercase(word);
+		words.insert(word);
+		//std::cout << word << std::endl;
+		//TrieNode* test = words.prefix(word);
+		//std::cout << test->inSet << std::endl;
 	}
 
-	Dictionary::~Dictionary (){
-		//for(unsigned int i = 0; i<wordlist.size(); i++){
-			//delete[] wordlist;
-		//}
-	}
+}
 
-	/* Checks whether the given word is in the dictionary, and returns true if so.
-	   Case should not matter. Must run in O(logn) for the number of words in the dictionary. */
-	bool Dictionary::isLegalWord (std::string const & word) const{
+Dictionary::~Dictionary()
+{
+	// default destructor is OK
+}
 
-		for(unsigned int i = 0; i <wordlist.size(); i++){
-			if(wordlist[i] == word){
-				return true;
-			}
-		}
-		return false;
-	}
+bool Dictionary::isLegalWord(std::string const &word)
+{
+	
+	std::string lowercaseWord(word);
+	makeLowercase(lowercaseWord);
 
+	TrieNode* check = words.prefix(lowercaseWord);
 
+if(check == nullptr){
+
+	return false;
+}
+
+	return check->inSet;
+
+//	return words.find(lowercaseWord) != words.end();
+}
+
+TrieSet Dictionary::getTrie(){
+	return words;
+}

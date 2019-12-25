@@ -2,6 +2,8 @@
 // CS104 HW4 board and hand printer implementation
 // ----------------------------------------
 
+// STUDENTS: you must use this file as-is without modifications
+
 #include "ConsolePrinter.h"
 #include "rang.h"
 

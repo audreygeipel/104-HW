@@ -14,32 +14,74 @@
 
 #include <string>
 #include <set>
+#include <map>
 #include <vector>
 
 #include "Tile.h"
+#include "Dictionary.h"
+#include "Board.h"
+#include "Bag.h"
 
+class Board;
 
 class Player
 {
+	//STUDENTS: Add private members & functions here
+	const std::string _name;
+	const size_t _maxTiles;
+	const int _type; //0 is human, 1 is long, 2 is score
+	unsigned int _points;
+
+
+	// stores the player's tiles indexed by character
+	std::multimap<char, Tile *> _hand;
+
+	// get this REALLY LONG type out of the way
+	// mannnn I REALLY wish we were allowed to use "auto"
+	typedef std::pair<std::multimap<char, Tile *>::iterator, std::multimap<char, Tile *>::iterator> HandSearchResult;
+	typedef std::pair<std::multimap<char, Tile *>::const_iterator, std::multimap<char, Tile *>::const_iterator> ConstHandSearchResult;
+
 
 public:
 	/* Constructor giving the player the given name, and setting their points to 0.
 	   Does not give the player any tiles.
 	*/
-	Player (std::string const & name, size_t maxTiles);
+	Player (std::string const & name, size_t maxTiles, int t);
 
 	/* Destructor for a player. Deletes all the tiles the player still has. */
 	~Player ();
 
+
+	std::multimap<char, Tile *> getHand();
+	/* Increments the player's score by the given amount. */
+	void addPoints (unsigned int points);
+
+	/* Decrements the player's score by the given amount.
+	   If this subtraction would cause the player's score to go below 0,
+	   the player's score is set to 0.
+   	*/
+	void subtractPoints(unsigned int pointsToSubtract);
+
+	/* Returns the player's name. */
+	std::string getName () const;
+
+	/* Returns the player's current score. */
+	unsigned int getPoints () const;
+
+	/* Returns the number of tiles the player currently has. */
+	size_t getNumTiles () const;
+
+	/* Returns the maxiumum amount of tiles that the player may hold. */
+	size_t getMaxTiles() const;
+
+	/* Returns the total value of all tiles the player still has.
+	   Used in the final subtraction of the game. */
+	unsigned int remainingPoints () const;
+
 	/* Returns the set of tiles the player currently holds. */
 	std::set<Tile*> getHandTiles() const;
 
-
-	size_t getMaxTiles() const;
-
-	void setStart(bool start);
-
-	bool getStart();
+	int getType();
 
 
 	/* Reads a move string and confirms that the player has the tiles necessary to
@@ -52,7 +94,7 @@ public:
 	   the next letter is interpreted as the letter to use the blank as.
 
 	   By definition, if this function returns true, then takeTiles() would
-	   succeed.
+	   succeed without throwing any exceptions.
 	 */
 
 	bool hasTiles(std::string const & move, bool resolveBlanks) const;
@@ -68,28 +110,28 @@ public:
 	   the next letter is interpreted as the letter to use the blank as,
 	   and the "use" field of the tile is set accordingly.
 
+	   This function may throw a MoveException with message "WRONGTILES"
+	   if the player does not have the tiles described by move.
+
 	   The move string is assumed to have correct syntax.
 	*/
 	std::vector<Tile*> takeTiles (std::string const & move, bool resolveBlanks);
 
-	// Adds all the tiles in the vector to the player's hand.
+	/* Adds all the tiles in the vector to the player's hand.
+
+	   If adding the given tiles would push the player over
+	   the maximum tile limit, a MoveException with message
+	   "TILELIMIT" is thrown.  */
 	void addTiles (std::vector<Tile*> const & tilesToAdd);
 
-	//Add more public/protected/private functions/variables here.
-	std::string getName();
+	std::vector<std::string> findWords(std::multimap<char, Tile *> _hand, Board * board, Dictionary * dictionary);
 
-	int getScore();
-	
-	void setScore(int newscore);
-//	int addScore(Tile * tile, )
+	std::vector<std::string> useTheTrie(std::vector<char> letters, Dictionary * dictionary);
 
+	void CPUSmove(std::vector<std::string> w, Board * board, Bag * bag, Dictionary * dictionary);
 
-protected:
-	size_t maximumTiles;
-	std::set<Tile*> hand;
-	int score;
-	std::string playername;
-	bool isstart;
+	void CPULmove(std::vector<std::string> w, Board * board, Bag * bag, Dictionary * dictionary);
+
 };
 
 

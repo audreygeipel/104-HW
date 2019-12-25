@@ -1,8 +1,32 @@
+BINDIR := bin
 
-all: search coloring
+CXX := g++
+CXXFLAGS := -g -Wall --std=c++11
 
-search: search.cpp
-	g++ -Wall -g -std=c++11 search.cpp -o search
+VALGRIND := valgrind --tool=memcheck --leak-check=yes
 
-coloring: coloring.cpp
-	g++ -Wall -g -std=c++11 coloring.cpp -o coloring
+GTEST_CXXFLAGS := -I /usr/include/gtest/ 
+GTEST_LDFLAGS := -l gtest -l gtest_main -pthread
+
+all: scrabble trie
+
+# Create binary dir
+$(BINDIR)/.dirstamp:
+	mkdir -p $(BINDIR)
+	touch $(BINDIR)/.dirstamp
+
+# generic rule for .cpp files
+$(BINDIR)/%.o : %.cpp $(BINDIR)/.dirstamp
+	$(CXX) -c $(CXXFLAGS) $< -o $@
+
+scrabble: $(BINDIR)/Bag.o $(BINDIR)/Board.o $(BINDIR)/ConsolePrinter.o $(BINDIR)/Dictionary.o $(BINDIR)/main.o $(BINDIR)/Move.o $(BINDIR)/Trie.o $(BINDIR)/Player.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+trie: $(BINDIR)/Trie.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+
+# clean
+clean:
+	rm -rf $(BINDIR) 
+

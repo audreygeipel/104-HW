@@ -8,8 +8,6 @@
 /* Encodes a single tile. Basically acts like a struct, 
    without interesting computation. */
 
-// Do not change this file.
-
 #ifndef TILE_H_
 #define TILE_H_
 
