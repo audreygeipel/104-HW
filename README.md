@@ -5,11 +5,19 @@
 - **Email**: ageipel@usc.edu
 
 The files you should grade are: 
-hw3.txt,
-circular_list_int.cpp,
-circular_list_int.h,
-Makefile,
-stackint.cpp,
-parser.cpp
+Bag.cpp
+Bag.h
+Board.cpp
+Board.h
+Dictionary.cpp
+Dictionary.h
+Makefile
+Move.cpp
+Move.h
+player.cpp
+Player.h
+scrabble.cpp
+Square.h
+Tile.h
 
-
+NOTE: I got all the functions to work, but the actual gameplay doesn't
