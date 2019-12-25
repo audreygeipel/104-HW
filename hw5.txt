@@ -1,0 +1,32 @@
+Problem 2
+
+worst-case scenario array:
+array[2,1,1,1,1,1,1,1,1,1,1,1,2]
+
+is the worst-possible pivot selection over all calls to partition, because the medianof3() 
+test will look at 2,1, and 2. 
+2 is the median, so one of the 2s will be put at the far right.
+Then, 2 is the number that will be used in the if statement comparison
+In the for loop, j = 0 and j<12.
+Then, a[j] will be less than or equal to 2 for all a[j].
+So, for all iterations of the for loop, it will enter the if statement and do a swap.
+
+This will move 1 all the way up to the second to last position, and then it will do another swap of 2 and 2, because 2 is greater than or equal to 2.
+
+
+Problem 4c
+Which algorithm would you say that your k-way mergeSort resembles when k=n? What is its running time in that case?
+
+When k = n, the mergeSort function then just goes through each element one at a time and merges it with the one next to it. 
+So, it goes through the array one by one and puts that element in place with the ones that have already gone.
+Therefore, it most resembles Insertion Sort.
+The runtime is thus O(n^2)
+
+
+
+OR
+When k = n, the mergeSort function then divides the array into k arrays, or, it divides it into k arrays all with one element.
+Then, to merge them, it finds the array with the smallest starting element to start with.
+But, because all the arrays are jsut one element, it is essentiall just finding the smallest element. It will continue searching for the smallest element to merge on to the array.
+Thus, it resembles Selection Sort, because it's searching for the smallest.
+The runtime is O(n^2)

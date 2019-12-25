@@ -5,19 +5,11 @@
 - **Email**: ageipel@usc.edu
 
 The files you should grade are: 
-Bag.cpp
-Bag.h
-Board.cpp
-Board.h
-Dictionary.cpp
-Dictionary.h
+cave.cpp
 Makefile
-Move.cpp
-Move.h
-player.cpp
-Player.h
-scrabble.cpp
-Square.h
-Tile.h
-
-NOTE: I got all the functions to work, but the actual gameplay doesn't
+fatalist.cpp
+functor.cpp
+functor.h
+msort.h (this doesn't work but the idea of what I was trying to do is there)
+hw5q1.jpeg (this contains the problem 1 answer)
+hw5.txt (this contains the problem 2 and problem 4 written answers)

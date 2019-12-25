@@ -1,103 +1,41 @@
 cmake_minimum_required(VERSION 3.1)
+project(HW5)
+set(CMAKE_CXX_STANDARD 11)
 
-message("########################################################")
-message("                 CS104 HW2 Test Suite")
-message("########################################################")
-
-project(CS104-HW2-Test-Suite C CXX)
-
-# pick up include files
-# ----------------------------------------------------------
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/test_cmake_lib)
-
-include(Policies NO_POLICY_SCOPE)
-include(Utils)
-include(Shorthand)
-include(LibraryUtils)
-include(104CompileFlags)
-
-# setup Valgrind
-# ----------------------------------------------------------
-
-find_program(VALGRIND NAMES valgrind DOC "Path to valgrind executable")
-import_executable(valgrind ${VALGRIND})
-
-set(VALGRIND_ARGS --tool=memcheck 
-	--leak-check=yes
-	--trace-children=no) # don't valgrind child processes, we control manually which processes are valground
-
-# find GTest
-# ----------------------------------------------------------
-
-find_package(GTest REQUIRED)
-find_package(Threads REQUIRED)
-
-import_libraries(gtest LIBRARIES ${GTEST_LIBRARIES} Threads::Threads INCLUDES ${GTEST_INCLUDE_DIRS})
-import_libraries(gtest_main LIBRARIES ${GTEST_MAIN_LIBRARIES} Threads::Threads INCLUDES ${GTEST_INCLUDE_DIRS})
-
-include(CustomTests)
+### GTest ###
 enable_testing()
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
 
-# find user code dir
-# ----------------------------------------------------------
+include_directories(. tests)
 
-if(NOT DEFINED HW2_DIR)
+# Feel free to uncomment this if you want to use cmake for compiling your programs
+#add_executable(Cave
+#        cave.cpp)
 
-	file(GLOB PARENT_DIR_CPP_FILES "${CMAKE_BINARY_DIR}/../*.cpp")
+#add_executable(Functor
+#        functor.cpp
+#        functor.h)
 
-	if("${PARENT_DIR_CPP_FILES}" STREQUAL "")
-		message(FATAL_ERROR "Cannot find source files in parent directory.  Either move this test directory to your hw2 dir, or run CMake with the \"-DHW2_DIR=<path to hw2>\" argument to use a custom location")
-	else()
-		get_filename_component(PARENT_DIR_REALPATH "${CMAKE_BINARY_DIR}/.." REALPATH)
-		message(STATUS "HW2_DIR autoset to ${PARENT_DIR_REALPATH}")
-		set(HW2_DIR ${PARENT_DIR_REALPATH} CACHE PATH "Path to hw2 assignment directory")
-	endif()
-endif()
-
-# build loose user code as a CMake library
-# ----------------------------------------------------------
-
-set(HW2_SOURCES 
-	${HW2_DIR}/selection_sort.cpp
-	${HW2_DIR}/circular_list_int.cpp
-	${HW2_DIR}/duck_duck_goose.cpp)
-
-# first check that we have the right sources
-foreach(HW2_SOURCE ${HW2_SOURCES})
-	if(NOT EXISTS ${HW2_SOURCE})
-		message(FATAL_ERROR "Cannot find required source file ${HW2_SOURCE}")
-	endif()
-endforeach()
-
-# now build user code into CMake libraries
-add_library(hw2_selection_sort STATIC ${HW2_DIR}/selection_sort.cpp)
-target_include_directories(hw2_selection_sort PUBLIC ${HW2_DIR})
-
-add_library(hw2_circular_list STATIC ${HW2_DIR}/circular_list_int.cpp)
-target_include_directories(hw2_circular_list PUBLIC ${HW2_DIR})
-
-add_library(hw2_duck_duck_goose STATIC ${HW2_DIR}/duck_duck_goose.cpp)
-target_include_directories(hw2_duck_duck_goose PUBLIC ${HW2_DIR})
-
-# disable any main functions in student code
-target_compile_definitions(hw2_selection_sort PRIVATE main=disabled_main)
-target_compile_definitions(hw2_circular_list PRIVATE main=disabled_main)
-target_compile_definitions(hw2_duck_duck_goose PRIVATE main=disabled_main)
+add_executable(Fatalist-Test
+        tests/fatalist_test.cpp)
+add_test(Fatalist-Test Fatalist-Test)
+target_link_libraries(Fatalist-Test gtest gtest_main)
 
 
-# build user executable
-# ----------------------------------------------------------
+add_executable(Functor-Test
+        tests/functor_test.cpp)
+add_test(Functor-Test Functor-Test)
+target_link_libraries(Functor-Test gtest gtest_main)
 
-add_executable(duck_duck_goose ${HW2_DIR}/duck_duck_goose.cpp ${HW2_DIR}/circular_list_int.cpp)
+add_executable(Merge-Test
+	tests/utils/runtime_evaluator.cpp
+        tests/merge_test.cpp)
+add_test(Merge-Test Merge-Test)
+target_link_libraries(Merge-Test gtest gtest_main)
 
-# build testing utils lib
-# ----------------------------------------------------------
+add_executable(Cave-Test
+        tests/cave_test.cpp)
+add_test(Cave-Test Cave-Test)
+target_link_libraries(Cave-Test gtest gtest_main)
 
-add_subdirectory(testing_utils)
-
-
-# build actual tests
-# ----------------------------------------------------------
-add_subdirectory(selection_sort_tests)
-add_subdirectory(circular_list_tests)
-add_subdirectory(duck_duck_goose_tests)
